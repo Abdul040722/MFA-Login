@@ -1,0 +1,32 @@
+<!-- templates/otp.html -->
+<!-- This HTML file provides the OTP verification interface -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>MFA System - OTP Verification</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <h1>OTP Verification</h1>
+    <p>An OTP has been generated and sent to your device (simulated in the console). Please enter it below:</p>
+    <!-- OTP form -->
+    <form action="{{ url_for('verify_otp', otp_value=otp_value, user=user) }}" method="POST">
+        <label for="otp">Enter OTP:</label>
+        <input type="text" id="otp" name="otp" required>
+        <br><br>
+        <button type="submit">Verify OTP</button>
+    </form>
+    <!-- Display flash messages -->
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        <ul>
+          {% for message in messages %}
+            <li>{{ message }}</li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+    {% endwith %}
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>

@@ -1,0 +1,38 @@
+<!-- templates/register.html -->
+<!-- This HTML file provides the registration interface for the MFA system -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>MFA System - Register</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <h1>Register</h1>
+    <!-- Registration form -->
+    <form action="{{ url_for('register') }}" method="POST">
+        <label for="username">Username:</label>
+        <input type="text" id="username" name="username" required>
+        <br><br>
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email" required>
+        <br><br>
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password" required>
+        <br><br>
+        <button type="submit">Create Account</button>
+    </form>
+    <p>Already have an account? <a href="{{ url_for('index') }}">Login here</a></p>
+    <!-- Display flash messages -->
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        <ul>
+          {% for message in messages %}
+            <li>{{ message }}</li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+    {% endwith %}
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>

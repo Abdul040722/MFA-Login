@@ -1,0 +1,35 @@
+<!-- templates/index.html -->
+<!-- This HTML file provides the login interface for the MFA system -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>MFA System - Login</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <h1>Login</h1>
+    <!-- Login form -->
+    <form action="{{ url_for('login') }}" method="POST">
+        <label for="username">Username:</label>
+        <input type="text" id="username" name="username" required>
+        <br><br>
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password" required>
+        <br><br>
+        <button type="submit">Login</button>
+    </form>
+    <p>Don't have an account? <a href="{{ url_for('register') }}">Register here</a></p>
+    <!-- Display flash messages -->
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        <ul>
+          {% for message in messages %}
+            <li>{{ message }}</li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+    {% endwith %}
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
