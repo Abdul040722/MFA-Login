@@ -1,5 +1,3 @@
-# README.txt
-
 ## Project Overview
 
 This project is a simple web-based Multi-Factor Authentication (MFA) system using Flask. It includes user registration, login, and OTP (One-Time Password) verification. The project is divided into three main Python scripts:
