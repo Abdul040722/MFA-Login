@@ -1,32 +1,108 @@
 <!-- templates/otp.html -->
-<!-- This HTML file provides the OTP verification interface -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MFA System - OTP Verification</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <meta http-equiv="refresh" content="600;url={{ url_for('index') }}"> <!-- Auto redirect after OTP expires -->
 </head>
 <body>
-    <h1>OTP Verification</h1>
-    <p>An OTP has been generated and sent to your device (simulated in the console). Please enter it below:</p>
-    <!-- OTP form -->
-    <form action="{{ url_for('verify_otp', otp_value=otp_value, user=user) }}" method="POST">
-        <label for="otp">Enter OTP:</label>
-        <input type="text" id="otp" name="otp" required>
-        <br><br>
-        <button type="submit">Verify OTP</button>
-    </form>
+    <div class="otp-container">
+        <h1>Verification Code</h1>
+        <p class="otp-message">We've sent a 6-digit code to your email address. Enter it below to continue:</p>
+        
+        <!-- OTP form -->
+        <form action="{{ url_for('verify_otp', session_id=session_id) }}" method="POST">
+            <div class="otp-input-group">
+                <input type="text" maxlength="1" class="otp-digit" autofocus>
+                <input type="text" maxlength="1" class="otp-digit">
+                <input type="text" maxlength="1" class="otp-digit">
+                <input type="text" maxlength="1" class="otp-digit">
+                <input type="text" maxlength="1" class="otp-digit">
+                <input type="text" maxlength="1" class="otp-digit">
+                <input type="hidden" id="otp" name="otp" required>
+            </div>
+            
+            <div class="otp-timer">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                Code expires in <span id="timer">10:00</span>
+            </div>
+            
+            <div class="otp-actions">
+                <button type="submit" class="btn-primary">Verify Code</button>
+                <a href="{{ url_for('index') }}" class="btn-secondary">Try Again</a>
+            </div>
+        </form>
+    </div>
+    
     <!-- Display flash messages -->
     {% with messages = get_flashed_messages() %}
       {% if messages %}
-        <ul>
+        <ul class="messages">
           {% for message in messages %}
             <li>{{ message }}</li>
           {% endfor %}
         </ul>
       {% endif %}
     {% endwith %}
+    
+    <script>
+        // Timer for OTP expiration
+        const startMinutes = 10;
+        let time = startMinutes * 60;
+        const timerElement = document.getElementById('timer');
+        
+        const interval = setInterval(updateTimer, 1000);
+        
+        function updateTimer() {
+            const minutes = Math.floor(time / 60);
+            let seconds = time % 60;
+            seconds = seconds < 10 ? '0' + seconds : seconds;
+            
+            timerElement.innerHTML = `${minutes}:${seconds}`;
+            time--;
+            
+            if (time < 0) {
+                clearInterval(interval);
+                timerElement.innerHTML = "Expired";
+                alert("Your verification code has expired. You'll be redirected to the login page.");
+                window.location.href = "{{ url_for('index') }}";
+            }
+        }
+        
+        // OTP input handling - focus management and combining into hidden field
+        const otpDigits = document.querySelectorAll('.otp-digit');
+        const otpField = document.getElementById('otp');
+        
+        otpDigits.forEach((digit, index) => {
+            // Auto-focus next input after entry
+            digit.addEventListener('input', function() {
+                if (this.value.length === 1) {
+                    if (index < otpDigits.length - 1) {
+                        otpDigits[index + 1].focus();
+                    }
+                }
+                updateOtpValue();
+            });
+            
+            // Handle backspace
+            digit.addEventListener('keydown', function(e) {
+                if (e.key === 'Backspace' && !this.value && index > 0) {
+                    otpDigits[index - 1].focus();
+                }
+            });
+        });
+        
+        function updateOtpValue() {
+            let otp = '';
+            otpDigits.forEach(digit => {
+                otp += digit.value;
+            });
+            otpField.value = otp;
+        }
+    </script>
     <script src="{{ url_for('static', filename='script.js') }}"></script>
 </body>
 </html>
