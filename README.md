@@ -1,71 +1,126 @@
-## Project Overview
+# Secure MFA System
 
-This project is a simple web-based Multi-Factor Authentication (MFA) system using Flask. It includes user registration, login, and OTP (One-Time Password) verification. The project is divided into three main Python scripts:
+A secure Multi-Factor Authentication (MFA) web application built with Flask, featuring user registration, OTP verification via email, rate limiting, and comprehensive security logging.
 
-- `app.py`: Main application handling user login, registration, and OTP verification.
-- `auth.py`: Contains the user account management logic, including user creation, password validation, and authentication.
-- `otp.py`: Provides the functionality to generate a random one-time password for MFA.
+## Features
 
----
+- **User Registration**: Password validation with complexity requirements (uppercase, lowercase, numbers, special characters)
+- **MFA Login Flow**: Password + One-Time Password (OTP) sent via email
+- **Session Management**: Secure session handling with automatic expiration
+- **Rate Limiting**: Protection against brute-force attacks on login/registration/OTP endpoints
+- **Security Logging**: Detailed logging of authentication attempts and security events
+- **Email Integration**: SMTP-based OTP delivery via smtp2go with retry mechanism
+- **Dashboard**: Protected user dashboard with security status and activity tracking
+- **Password Security**: SHA-256 hashing with salt
+- **Responsive UI**: Clean and modern interface with client-side validation
 
-## Script Details
+## Installation
 
-### `app.py`
+1. **Clone Repository**
+   ```bash
+   git clone https://github.com/Abdul040722/MFA-Login
+   cd MFA-Login
+   ```
 
-This script is the entry point for the MFA system, using Flask to provide the following functionality:
+2. **Create Virtual Environment**
+   ```bash
+   python3 -m venv venv
+   source venv/bin/activate  # Linux/Mac
+   venv\Scripts\activate    # Windows
+   ```
 
-- **Homepage (`/`)**: Displays the login page.
-- **Registration Page (`/register`)**: Allows users to create new accounts by providing a username, email, and password.
-- **Login Page (`/login`)**: Handles user login. If the credentials are correct, a one-time password (OTP) is generated and sent for verification.
-- **OTP Verification Page (`/otp`)**: Displays a form where users can enter the OTP sent to them for additional security verification.
+3. **Install Dependencies**
+   ```bash
+   pip install flask python-dotenv
+   ```
 
-Flask's `flash()` function is used to display messages to users during registration, login, and OTP verification. The app's secret key is required for session management and message flashing.
+4. **Create Required Directories**
+   ```bash
+   mkdir -p data logs static data/sessions
+   ```
 
-**Required Modules**:
-- `Flask`: For routing and web interface.
-- `auth`: Custom authentication module (handles user creation and login).
-- `otp`: Custom OTP generation module.
+## Configuration
 
-### `auth.py`
+1. **Environment Variables** (create `.env` file)
+   ```env
+   SECRET_KEY=your_secure_secret_key
+   SMTP_SERVER=your.smtp.server
+   SMTP_PORT=587
+   SMTP_USERNAME=your_smtp_username
+   SMTP_PASSWORD=your_smtp_password
+   SENDER_EMAIL=noreply@yourdomain.com
+   ```
 
-This script handles the user account creation and login functionality. It provides the following:
+2. **Email Service Setup**
+   - Update SMTP credentials in `email_service.py`
+   - Test email functionality before deployment
 
-- **User class**: Defines a user with a username, email, and hashed password. It includes a method to convert user data into a dictionary format for JSON storage.
-- **Password Validation (`validate_password`)**: Ensures that the password meets the minimum length and character requirements (uppercase, lowercase, special characters).
-- **Password Hashing (`hash_password`)**: Uses SHA-256 hashing to securely store passwords.
-- **User Creation (`create_user`)**: Validates the password, hashes it, and stores the user data in a `users.json` file.
-- **Credential Check (`check_user_credentials`)**: Verifies a user's credentials during login by comparing the hashed passwords.
+## Usage
 
-**Required Modules**:
-- `os`: For file handling (checking if the user data file exists).
-- `json`: For reading and writing user data to a JSON file.
-- `hashlib`: For securely hashing passwords.
+1. **Start Application**
+   ```bash
+   python main.py
+   ```
 
-### `otp.py`
+2. **Access in Browser**
+   ```
+   http://localhost:5000
+   ```
 
-This script generates a one-time password (OTP) for multi-factor authentication (MFA). The OTP is a 6-digit number generated randomly.
+3. **User Flow**
+   - Register new account with valid email
+   - Login with username/password
+   - Check email for OTP and verify
+   - Access secure dashboard
+   - Logout when finished
 
-- **OTP Generation (`generate_otp`)**: Generates a random integer between 100000 and 999999, then casts it to a string to be returned as the OTP.
-
-**Required Modules**:
-- `random`: For generating random numbers.
-
----
-
-## File Structure
+## Project Structure
 
 ```
-MFA Login Project/
-├── main.py                # Main application entry point (Flask server)
-├── auth.py                # Authentication module (User class, registration,login)
-├── otp.py                 # OTP generation module (includes casting and functions)
-├── data/
-│   └── users.json         # File storage for user accounts
-├── templates/
-│   ├── index.html         # Login page
-│   ├── register.html      # User registration page
-│   └── otp.html           # OTP verification page
-└── static/
-    ├── style.css          # CSS for styling
-    └── script.js          # JavaScript (for future enhancements)
+├── main.py              # Main application entry point
+├── auth.py              # User authentication and management
+├── otp.py               # OTP generation and validation
+├── email_service.py     # Email delivery functionality
+├── rate_limiter.py      # Rate limiting implementation
+├── security_logger.py   # Security event logging
+├── session_manager.py   # Session handling logic
+├── data/                # user & session data
+    ├── sessions/
+    ├── users.json
+├── logs                 # logs security details
+├── templates/           # HTML templates
+│   ├── index.html
+│   ├── register.html
+│   ├── otp.html
+│   └── dashboard.html
+└── static/              # Frontend assets
+    ├── style.css
+    └── script.js
 ```
+
+## Dependencies
+
+- Python 3.8+
+- Flask
+- smtplib (Python standard library)
+- Additional Python libraries: hashlib, uuid, logging, json
+
+## Security Features
+
+- **Password Hashing**: SHA-256 with salt
+- **Account Lockout**: 5 failed attempts locks account for 30 minutes
+- **Session Security**:
+  - Automatic session expiration (10 minutes)
+  - Single active session per user
+  - Session invalidation on logout
+- **Rate Limiting**:
+  - 5 login attempts/5 minutes
+  - 3 OTP attempts/10 minutes
+  - Progressive lockout durations
+- **Security Logging**:
+  - Authentication attempts (success/failure)
+  - OTP validation attempts
+  - Rate limit triggers
+  - Session events
+
+## License
