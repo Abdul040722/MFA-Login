@@ -77,6 +77,18 @@ A secure Multi-Factor Authentication (MFA) web application built with Flask, fea
 ## Project Structure
 
 ```
+├── data/                # user & session data
+    ├── sessions/
+    ├── users.json
+├── logs                 # logs security details
+└── static/              # Frontend assets
+    ├── style.css
+    └── script.js
+├── templates/           # HTML templates
+│   ├── index.html
+│   ├── register.html
+│   ├── otp.html
+│   └── dashboard.html
 ├── main.py              # Main application entry point
 ├── auth.py              # User authentication and management
 ├── otp.py               # OTP generation and validation
@@ -84,18 +96,6 @@ A secure Multi-Factor Authentication (MFA) web application built with Flask, fea
 ├── rate_limiter.py      # Rate limiting implementation
 ├── security_logger.py   # Security event logging
 ├── session_manager.py   # Session handling logic
-├── data/                # user & session data
-    ├── sessions/
-    ├── users.json
-├── logs                 # logs security details
-├── templates/           # HTML templates
-│   ├── index.html
-│   ├── register.html
-│   ├── otp.html
-│   └── dashboard.html
-└── static/              # Frontend assets
-    ├── style.css
-    └── script.js
 ```
 
 ## Dependencies
